@@ -1,0 +1,37 @@
+{
+name		Daemia
+model		major/daemia
+aifile	bots/daemia_c.c
+}
+
+{
+name		Visor
+model		visor
+aifile	bots/visor_c.c
+}
+
+{
+name		Major
+model		major
+aifile	bots/major_c.c
+}
+
+{
+name		Sarge
+model		sarge
+aifile	bots/sarge_c.c
+arenaLord	1
+}
+
+{
+name		Stripe
+model		grunt/stripe
+aifile	bots/stripe_c.c
+}
+
+{
+name		Grunt
+model		grunt
+aifile	bots/grunt_c.c
+}
+

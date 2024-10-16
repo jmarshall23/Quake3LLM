@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LocalDebuggerCommand>C:\Projects\Quake3SDK\tools\q3map.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments>C:\Projects\Quake3SDK\baseq3\maps\q3dm1sample.map</LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>C:\Projects\Quake3SDK\tools</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DebugTTimo|x64'">
+    <LocalDebuggerCommand>C:\Projects\Quake3SDK\tools\q3map.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments>C:\Projects\Quake3SDK\baseq3\maps\q3dm1sample.map</LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>C:\Projects\Quake3SDK\tools</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LocalDebuggerCommand>C:\Projects\Quake3SDK\tools\q3map.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments>C:\Projects\Quake3SDK\baseq3\maps\q3dm1sample.map</LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>C:\Projects\Quake3SDK\tools</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseTTimo|x64'">
+    <LocalDebuggerCommand>C:\Projects\Quake3SDK\tools\q3map.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments>C:\Projects\Quake3SDK\baseq3\maps\q3dm1sample.map</LocalDebuggerCommandArguments>
+    <LocalDebuggerWorkingDirectory>C:\Projects\Quake3SDK\tools</LocalDebuggerWorkingDirectory>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+</Project>
