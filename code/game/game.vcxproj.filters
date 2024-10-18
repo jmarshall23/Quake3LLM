@@ -117,6 +117,9 @@
     <ClCompile Include="q_shared.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ai_llm.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ai_chat.h">

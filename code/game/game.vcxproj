@@ -423,6 +423,7 @@
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MaxSpeed</Optimization>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">WIN32;NDEBUG;_WINDOWS;GLOBALRANK</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="ai_llm.c" />
     <ClCompile Include="ai_main.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug Alpha|x64'">Disabled</Optimization>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug Alpha|x64'">WIN32;_DEBUG;_WINDOWS;C_ONLY</PreprocessorDefinitions>

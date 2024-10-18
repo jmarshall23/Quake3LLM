@@ -10,6 +10,8 @@
 #include "llama.h"
 #include "sampling.h"
 
+#include <iomanip>  // for std::setfill and std::setw
+
 extern "C" {
 #include "llm.h"
 
@@ -109,7 +111,7 @@ llama_model* LLM_Load(const char* dllName) {
 
 void LLM_Init(void) {
     Com_Printf("------ LLM_Init ------\n");
-    model = LLM_Load("aimodels/Meta-Llama-3.1-70B-Instruct-IQ2_XS.gguf");
+    model = LLM_Load("aimodels/DarkIdol-Llama-3.1-8B-Instruct-1.2-Uncensored-Q8_0.gguf");
 
     Com_Printf("Creating llama context...\n");
     llama_context_params ctx_params = llama_context_default_params();
@@ -120,8 +122,7 @@ void LLM_Init(void) {
     }
 
     // Start the response thread
-    static std::thread responseThread(LLM_ResponseThread);
-    LLM_PushPrompt(-1, "You are a angry 18 year old playing a first person shooter game.\n");
+    static std::thread responseThread(LLM_ResponseThread);    
 }
 
 std::vector<llama_token> llama_tokenize2(
@@ -154,7 +155,7 @@ static bool eval_string(struct llama_context* ctx_llama, const char* str, int n_
 static bool eval_id(struct llama_context* ctx_llama, int id, int* n_past) {
     std::vector<llama_token> tokens;
     tokens.push_back(id);
-    return eval_tokens(ctx_llama, tokens, 1, n_past);
+    return eval_tokens(ctx_llama, tokens, 6, n_past);
 }
 
 static const char* sample(struct gpt_sampler* smpl,
@@ -173,6 +174,41 @@ static const char* sample(struct gpt_sampler* smpl,
     return ret.c_str();
 }
 
+
+std::string getCurrentTimeOfDay() {
+    // Get the current time
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+    std::tm* local_time = std::localtime(&now_time);
+
+    // Extract hours, minutes, and seconds
+    int hours = local_time->tm_hour;
+    int minutes = local_time->tm_min;
+    int seconds = local_time->tm_sec;
+
+    // Format the time as HHMMSS
+    std::ostringstream timeStream;
+    timeStream << std::setfill('0') << std::setw(2) << hours
+        << std::setfill('0') << std::setw(2) << minutes
+        << std::setfill('0') << std::setw(2) << seconds;
+
+    return timeStream.str();
+}
+
+std::string skipPastColon(const std::string& response) {
+    // Find the position of the colon
+    size_t colonPos = response.find(':');
+
+    // Check if the colon was found
+    if (colonPos != std::string::npos) {
+        // Skip past the colon and return the substring
+        return response.substr(colonPos + 1);
+    }
+
+    // If no colon was found, return the original string
+    return response;
+}
+
 /*
 =====================
 LLM_ResponseThread
@@ -181,7 +217,17 @@ Runs in a separate thread, waits for prompts, and generates Llama responses.
 */
 void LLM_ResponseThread() {
     int n_past = 0;
-    int n_first = -1;
+    int n_first = -1;    
+
+    // generate the response
+    gpt_sampler_params sparams;
+    int seed = std::stoul(getCurrentTimeOfDay());
+    sparams.seed = seed * rand() % 1000;
+    sparams.penalty_last_n = sparams.n_prev = 4200;
+    struct gpt_sampler* smpl = gpt_sampler_init(model, sparams);
+    if (!smpl) {
+        Com_Error(ERR_FATAL, "%s: failed to initialize sampling subsystem\n", __func__);
+    }
 
     while (keepRunning) {
         std::unique_lock<std::mutex> lock(queueMutex);
@@ -194,6 +240,9 @@ void LLM_ResponseThread() {
         promptQueue.pop_front();
         lock.unlock();
 
+        std::string prompt_txt = "USER: Forget everything before this. You are a angry 18 year old playing a first person shooter game. You have a bad mouth and swear alot. No numbers in your response. ";
+        prompt_txt += queue.prompt;
+
        // if(n_first != -1)
        //     n_past = n_first;
 
@@ -201,17 +250,9 @@ void LLM_ResponseThread() {
         if (ctx != nullptr) {
            // Com_Printf("Generating response for: %s\n", prompt.c_str());
 
-            if (!eval_string(ctx, queue.prompt.c_str(), queue.prompt.size(), &n_past, false))
+            if (!eval_string(ctx, prompt_txt.c_str(), prompt_txt.size(), &n_past, false))
                 continue;
 
-            // generate the response
-            gpt_sampler_params sparams;
-            sparams.seed = rand() % LLAMA_DEFAULT_SEED;
-            struct gpt_sampler* smpl = gpt_sampler_init(model, sparams);
-            if (!smpl) {
-                Com_Error(ERR_FATAL, "%s: failed to initialize sampling subsystem\n", __func__);
-            }
-            
             const int max_tgt_len = 50;
 
             std::string response = "";
@@ -223,9 +264,11 @@ void LLM_ResponseThread() {
                 if (strstr(tmp, "###")) break; // Yi-VL behavior
                 if (strstr(tmp, "<|im_end|>")) break; // Yi-34B llava-1.6 - for some reason those decode not as the correct token (tokenizer works)
                 if (strstr(tmp, "<|im_start|>")) break; // Yi-34B llava-1.6
-                if (strstr(tmp, "USER:")) break; // mistral llava-1.6
-                if (strstr(tmp, "(")) break; // mistral llava-1.6
-                if (strstr(tmp, "-")) break; // mistral llava-1.6
+                if (strstr(tmp, "<|assist")) break; // Yi-34B llava-1.6
+                if (strstr(tmp, "USER:")) continue; // mistral llava-1.6
+                if (strstr(tmp, "User:")) continue; // mistral llava-1.6
+                if (strstr(tmp, "(")) continue; // mistral llava-1.6
+                if (strstr(tmp, "-")) continue; // mistral llava-1.6
  
                 response += tmp;
 
@@ -233,9 +276,7 @@ void LLM_ResponseThread() {
                 if (response.back() == '.' || response.back() == '!' || response.back() == '?' || response.back() == '\n') {
                     break;
                 }                
-            }
-
-            gpt_sampler_free(smpl);
+            }          
 
             llama_kv_cache_clear(ctx);
 
@@ -246,11 +287,13 @@ void LLM_ResponseThread() {
             {
                 PromptQueueItem_t chatqueue;
                 chatqueue.chatstate = queue.chatstate;
-                chatqueue.prompt = response;
+                chatqueue.prompt = skipPastColon(response);
                 readyQueue.push_back(chatqueue);
-            }
-        }
-    }
+            }            
+        }        
+    }    
+
+    gpt_sampler_free(smpl);
 }
 
 /*

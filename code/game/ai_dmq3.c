@@ -5395,7 +5395,7 @@ void BotSetupDeathmatchAI(void) {
 
 	trap_Cvar_Register(&bot_rocketjump, "bot_rocketjump", "1", 0);
 	trap_Cvar_Register(&bot_grapple, "bot_grapple", "0", 0);
-	trap_Cvar_Register(&bot_fastchat, "bot_fastchat", "0", 0);
+	trap_Cvar_Register(&bot_fastchat, "bot_fastchat2", "1", 0);
 	trap_Cvar_Register(&bot_nochat, "bot_nochat", "0", 0);
 	trap_Cvar_Register(&bot_testrchat, "bot_testrchat", "0", 0);
 	trap_Cvar_Register(&bot_challenge, "bot_challenge", "0", 0);

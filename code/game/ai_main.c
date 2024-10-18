@@ -212,35 +212,6 @@ int BotAI_GetSnapshotEntity( int clientNum, int sequence, entityState_t *state )
 
 /*
 ==================
-BotAI_BotInitialChat
-==================
-*/
-void QDECL BotAI_BotInitialChat( bot_state_t *bs, char *type, ... ) {
-	int		i, mcontext;
-	va_list	ap;
-	char	*p;
-	char	*vars[MAX_MATCHVARIABLES];
-
-	memset(vars, 0, sizeof(vars));
-	va_start(ap, type);
-	p = va_arg(ap, char *);
-	for (i = 0; i < MAX_MATCHVARIABLES; i++) {
-		if( !p ) {
-			break;
-		}
-		vars[i] = p;
-		p = va_arg(ap, char *);
-	}
-	va_end(ap);
-
-	mcontext = BotSynonymContext(bs);
-
-	trap_BotInitialChat( bs->cs, type, mcontext, vars[0], vars[1], vars[2], vars[3], vars[4], vars[5], vars[6], vars[7] );
-}
-
-
-/*
-==================
 BotTestAAS
 ==================
 */
