@@ -897,7 +897,7 @@ int BotChat_Random(bot_state_t* bs) {
 
 	if (bot_nochat.integer) return qfalse;
 	if (BotIsObserver(bs)) return qfalse;
-	if (!(bs->lastchat_time < FloatTime() + (TIME_BETWEENCHATTING))) return qfalse;
+	if (!(bs->lastchat_time < FloatTime() + (TIME_BETWEENCHATTING * 4))) return qfalse;
 	// don't chat in tournament mode
 	if (gametype == GT_TOURNAMENT) return qfalse;
 	//don't chat when doing something important :)

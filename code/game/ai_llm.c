@@ -55,19 +55,19 @@ void QDECL BotAI_BotInitialChat(bot_state_t* bs, char* type, ...) {
     // Create the prompt based on the chat type and use vargs for dynamic content
     if (strcmp(type, "game_enter") == 0) {
         trap_LLM_PushPrompt(bs->client, va(
-            "You just entered the first person shooter game. Trash-talk your opponents about how great you are.  Make it a trolling response.\n",
+            "You just entered the first person shooter game. Trash-talk your opponents about how you are going to fuck them up, and how big and bad you are. Make it a trolling response.\n",
             vars[0] ? vars[0] : "an opponent", vars[1] ? vars[1] : "something random"
         ));
     }
     else if (strcmp(type, "game_exit") == 0) {
         trap_LLM_PushPrompt(bs->client, va(
-            "You are a raging 18 year old game.You're about to leave the first person shooter game. Your last words to %s are: %s. What do you say?  Make it a trolling response.\n",
+            "You're about to leave the first person shooter game. Your last words to %s are: %s. What do you say?  Make it a trolling response.\n",
             vars[0] ? vars[0] : "an opponent", vars[1] ? vars[1] : "a final taunt"
         ));
     }
     else if (strcmp(type, "level_start") == 0) {
         trap_LLM_PushPrompt(bs->client, va(
-            "You are a raging 18 year old game.The level just started, and you're in the first person shooter game. You see %s and you taunt them with: %s.  Make it a trolling response.\n",
+            "The level just started, and you're in the first person shooter game. You see %s and you taunt them with: %s.  Make it a trolling response.\n",
             vars[0] ? vars[0] : "your opponent", vars[1] ? vars[1] : "something random"
         ));
     }
@@ -201,7 +201,7 @@ void QDECL BotAI_BotInitialChat(bot_state_t* bs, char* type, ...) {
     }
     else if (strstr(type, "death_")) {
         trap_LLM_PushPrompt(bs->client, va(
-            "You just got killed by %s and the player used %s. What do you say?  Make it a trolling response.\n",
+            "You just got killed by %s using %s. What do you say? Make it a trolling response.\n",
             vars[0] ? vars[0] : "someone", vars[1] ? vars[1] : "a gun"
         ));
         }

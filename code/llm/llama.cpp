@@ -243,40 +243,55 @@ void LLM_ResponseThread() {
         std::string prompt_txt = "USER: Forget everything before this. You are a angry 18 year old playing a first person shooter game. You have a bad mouth and swear alot. No numbers in your response. ";
         prompt_txt += queue.prompt;
 
-       // if(n_first != -1)
-       //     n_past = n_first;
+        const int max_tgt_len = 50;
+        std::string response = "";
+        std::string intermediate_str = ""; // Intermediate string to store incomplete tokens
 
-        // Generate response using llama (simplified llama call for illustration)
-        if (ctx != nullptr) {
-           // Com_Printf("Generating response for: %s\n", prompt.c_str());
-
+        bool skipToken = false;
+        if(ctx != nullptr) {
             if (!eval_string(ctx, prompt_txt.c_str(), prompt_txt.size(), &n_past, false))
                 continue;
 
             const int max_tgt_len = 50;
-
-            std::string response = "";
             for (int i = 0; i < max_tgt_len; i++) {
-                const char* tmp = sample(smpl, ctx, &n_past);   
+                const char* tmp = sample(smpl, ctx, &n_past);
                 n_past++; // Increment n_past for the next token
 
+                // If tmp contains any stop conditions, break the loop
                 if (strcmp(tmp, "</s>") == 0) break;
                 if (strstr(tmp, "###")) break; // Yi-VL behavior
                 if (strstr(tmp, "<|im_end|>")) break; // Yi-34B llava-1.6 - for some reason those decode not as the correct token (tokenizer works)
                 if (strstr(tmp, "<|im_start|>")) break; // Yi-34B llava-1.6
                 if (strstr(tmp, "<|assist")) break; // Yi-34B llava-1.6
-                if (strstr(tmp, "USER:")) continue; // mistral llava-1.6
-                if (strstr(tmp, "User:")) continue; // mistral llava-1.6
-                if (strstr(tmp, "(")) continue; // mistral llava-1.6
+                if (strstr(tmp, "USER:")) break; // mistral llava-1.6
+                if (strstr(tmp, "User:")) break; // mistral llava-1.6
+                if (strstr(tmp, "("))
+                {
+                    skipToken = true;
+                }
+                if (strstr(tmp, ")"))
+                {
+                    skipToken = false;
+                    continue;
+                }
                 if (strstr(tmp, "-")) continue; // mistral llava-1.6
- 
-                response += tmp;
+                if (skipToken)
+                    continue;
+
+                // Add tmp to the intermediate buffer first
+                intermediate_str += tmp;
+
+                // Check if intermediate_str forms at least one complete token (basic example: checking for space or punctuation)
+                if (intermediate_str.back() == ' ' || intermediate_str.back() == '.' || intermediate_str.back() == '!' || intermediate_str.back() == '?' || intermediate_str.back() == '\n') {
+                    response += intermediate_str;  // Append the valid token to response
+                    intermediate_str.clear(); // Clear intermediate buffer after moving to response
+                }
 
                 // Check if the response ends with sentence-ending punctuation
-                if (response.back() == '.' || response.back() == '!' || response.back() == '?' || response.back() == '\n') {
+                if (!response.empty() && (response.back() == '.' || response.back() == '!' || response.back() == '?' || response.back() == '\n')) {
                     break;
-                }                
-            }          
+                }
+            }
 
             llama_kv_cache_clear(ctx);
 
