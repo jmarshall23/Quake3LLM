@@ -295,6 +295,8 @@ void LLM_ResponseThread() {
 
             llama_kv_cache_clear(ctx);
 
+            response += intermediate_str;
+
           //  if (n_first == -1)
           //      n_first = n_past;
 

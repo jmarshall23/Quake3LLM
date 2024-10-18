@@ -199,9 +199,21 @@ void QDECL BotAI_BotInitialChat(bot_state_t* bs, char* type, ...) {
             vars[0] ? vars[0] : "your opponent", vars[1] ? vars[1] : "your weapon", vars[4] ? vars[4] : "this map"
         ));
     }
+    else if (strstr(type, "death_insult")) {
+        trap_LLM_PushPrompt(bs->client, va(
+            "Trash-talk %s for killing you with a %s. What's the most savage comeback you can make to troll them?\n",
+            vars[0] ? vars[0] : "someone", vars[1] ? vars[1] : "a gun"
+        ));
+        }
+    else if (strstr(type, "death_praise")) {
+        trap_LLM_PushPrompt(bs->client, va(
+            "Praise %s for killing you with a %s. What's the most savage comeback you can make to troll them?\n",
+            vars[0] ? vars[0] : "someone", vars[1] ? vars[1] : "a gun"
+        ));
+        }
     else if (strstr(type, "death_")) {
         trap_LLM_PushPrompt(bs->client, va(
-            "You just got killed by %s using %s. What do you say? Make it a trolling response.\n",
+            "Trash-talk %s for killing you with a %s. What's the most savage comeback you can make to troll them?\n",
             vars[0] ? vars[0] : "someone", vars[1] ? vars[1] : "a gun"
         ));
         }
