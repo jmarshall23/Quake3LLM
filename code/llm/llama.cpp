@@ -91,7 +91,7 @@ llama_model* LLM_Load(const char* dllName) {
     // -eps 1e-5 -t 8 -ngl 50
     lparams.n_gpu_layers = 100;
     //lparams.n_ctx = 4096;
-    lparams.main_gpu = 1;
+    lparams.main_gpu = 0;
 
     Com_Printf("LLM_Load: Init backend and numa...\n");
     llama_backend_init();

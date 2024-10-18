@@ -24,12 +24,6 @@
 // for the voice chats
 #include "../ui/menudef.h" // sos001205 - for q3_ui also
 
-
-/*
-==================
-BotAI_BotInitialChat
-==================
-*/
 /*
 ==================
 BotAI_BotInitialChat
